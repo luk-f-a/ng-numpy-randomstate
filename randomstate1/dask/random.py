@@ -10,11 +10,33 @@ from dask.array.core import (normalize_chunks, Array, slices_from_chunks, asarra
                    broadcast_shapes, broadcast_to)
 from dask import sharedict
 from dask.base import tokenize
-from dask.utils import ignoring, random_state_data
+from dask.utils import ignoring
+
 
 from randomstate.prng import xoroshiro128plus
 
 Random_State_class = xoroshiro128plus.RandomState
+
+def random_state_data(n, random_state=None):
+    """Return a list of arrays that can initialize
+    ``np.random.RandomState``.
+
+    Parameters
+    ----------
+    n : int
+        Number of arrays to return.
+    random_state : int or np.random.RandomState, optional
+        If an int, is used to seed a new ``RandomState``.
+    """
+    import numpy as np
+
+    if not isinstance(random_state, np.random.RandomState):
+        random_state = np.random.RandomState(random_state)
+
+    random_data = random_state.bytes(624 * n * 4)  # `n * 624` 32-bit integers
+    l = list(np.frombuffer(random_data, dtype=np.uint32).reshape((n, -1)))
+    assert len(l) == n
+    return l
 
 def doc_wraps(func):
     """ Copy docstring from one function to another """
