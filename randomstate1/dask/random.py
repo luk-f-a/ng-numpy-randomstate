@@ -30,8 +30,8 @@ def random_state_data(n, random_state=None):
     """
     import numpy as np
 
-    if not isinstance(random_state, np.random.RandomState):
-        random_state = np.random.RandomState(random_state)
+#    if not isinstance(random_state, np.random.RandomState):
+#        random_state = np.random.RandomState(random_state)
 
     random_data = random_state.bytes(624 * n * 4)  # `n * 624` 32-bit integers
     l = list(np.frombuffer(random_data, dtype=np.uint32).reshape((n, -1)))
